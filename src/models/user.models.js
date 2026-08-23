@@ -1,23 +1,15 @@
 // Import mongoose and Schema from mongoose
 import mongoose, { Schema } from "mongoose";
-
-// Used to create and verify JWT tokens
 import jwt from "jsonwebtoken";
 
-// Used for password hashing and password comparison
+
 import bcrypt from "bcrypt";
 
-
-// ======================================================
-// USER SCHEMA
-// ======================================================
 
 // Schema defines the structure of a User document
 const userSchema = new Schema(
   {
-    // -----------------------------
-    // Username
-    // -----------------------------
+  
     username: {
       type: String,              // Data type is String
       required: true,            // Username must be provided
@@ -27,9 +19,7 @@ const userSchema = new Schema(
       index: true                // Create an index for faster searching
     },
 
-    // -----------------------------
-    // Email
-    // -----------------------------
+  
     email: {
       type: String,
       required: true,            // Email is required
@@ -38,68 +28,48 @@ const userSchema = new Schema(
       trim: true                 // Remove unnecessary spaces
     },
 
-    // -----------------------------
-    // Full Name
-    // -----------------------------
     fullname: {
       type: String,
-      required: true,            // Full name is required
+      required: true,           
       trim: true,
-      index: true                // Helps when searching by fullname
+      index: true               
     },
-
-    // -----------------------------
-    // Profile Avatar
-    // -----------------------------
     avatar: {
-      type: String,              // Cloudinary image URL
+      type: String,             
       required: true
     },
 
-    // -----------------------------
-    // Cover Image
-    // -----------------------------
     coverImage: {
-      type: String,              // Cloudinary image URL
+      type: String,              
       required: true
     },
 
-    // -----------------------------
-    // Watch History
-    // -----------------------------
     watchHistory: [
       {
-        type: Schema.Types.ObjectId, // Stores MongoDB ObjectId
-        ref: "Video"                 // Refers to the Video model
+        type: Schema.Types.ObjectId, 
+        ref: "Video"                 
       }
     ],
 
-    // -----------------------------
-    // Password
-    // -----------------------------
+
     password: {
       type: String,
       required: [true, "Password is required"]
     },
 
-    // -----------------------------
-    // Refresh Token
-    // -----------------------------
     refreshToken: {
       type: String
     }
   },
 
-  // Automatically creates createdAt and updatedAt fields
+
   {
     timestamps: true
   }
 );
 
 
-// ======================================================
-// PASSWORD HASHING
-// ======================================================
+
 
 // This middleware runs BEFORE a user document is saved
 // userSchema.pre("save", async function (next) {
@@ -117,9 +87,7 @@ userSchema.pre("save", async function () {
 
   this.password = await bcrypt.hash(this.password, 10);
 });
-// ======================================================
-// PASSWORD VERIFICATION
-// ======================================================
+
 
 // Custom method attached to every User document
 userSchema.methods.isPasswordCorrect = async function (password) {
@@ -130,9 +98,6 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 };
 
 
-// ======================================================
-// GENERATE ACCESS TOKEN
-// ======================================================
 
 userSchema.methods.generateAccessToken = function () {
 
@@ -156,9 +121,6 @@ userSchema.methods.generateAccessToken = function () {
 };
 
 
-// ======================================================
-// GENERATE REFRESH TOKEN
-// ======================================================
 
 userSchema.methods.generateRefreshToken = function () {
 
@@ -179,10 +141,4 @@ userSchema.methods.generateRefreshToken = function () {
 };
 
 
-// ======================================================
-// CREATE USER MODEL
-// ======================================================
-
-// Create a model named "User" using userSchema
-// MongoDB will use this model to create/read/update users
 export const User = mongoose.model("User", userSchema);
