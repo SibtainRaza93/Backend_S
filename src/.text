@@ -1,0 +1,21 @@
+const someController = asyncHandler(async (req, res) => {
+
+    // 1. What data do I need from request?
+
+    // 2. Validate that data
+
+    // 3. Which model/collection do I need?
+
+    // 4. What database operation do I need?
+    // find?
+    // findOne?
+    // create?
+    // update?
+    // delete?
+    // count?
+    // aggregate?
+
+    // 5. Authorization check?
+
+    // 6. What should I return?
+})
