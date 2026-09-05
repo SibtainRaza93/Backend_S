@@ -5,11 +5,6 @@ import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 
-
-// =====================================================
-// SUBSCRIBE TO A CHANNEL
-// =====================================================
-
 const subscribeToChannel = asyncHandler(async (req, res) => {
 
     // Get channel ID from URL
@@ -19,19 +14,10 @@ const subscribeToChannel = asyncHandler(async (req, res) => {
     const subscriberId = req.user._id
 
 
-    // -----------------------------------------
-    // 1. Validate channel ID
-    // -----------------------------------------
 
     if (!mongoose.isValidObjectId(channelId)) {
         throw new ApiError(400, "Invalid channel ID")
     }
-
-
-    // -----------------------------------------
-    // 2. Check if user is subscribing to
-    //    their own channel
-    // -----------------------------------------
 
     if (channelId.toString() === subscriberId.toString()) {
         throw new ApiError(
@@ -39,11 +25,6 @@ const subscribeToChannel = asyncHandler(async (req, res) => {
             "You cannot subscribe to your own channel"
         )
     }
-
-
-    // -----------------------------------------
-    // 3. Check if already subscribed
-    // -----------------------------------------
 
     const existingSubscription =
         await Subscription.findOne({
@@ -60,10 +41,6 @@ const subscribeToChannel = asyncHandler(async (req, res) => {
     }
 
 
-    // -----------------------------------------
-    // 4. Create subscription
-    // -----------------------------------------
-
     const subscription = await Subscription.create({
         subscriber: subscriberId,
         channel: channelId
@@ -77,11 +54,6 @@ const subscribeToChannel = asyncHandler(async (req, res) => {
         )
     }
 
-
-    // -----------------------------------------
-    // 5. Send response
-    // -----------------------------------------
-
     return res.status(201).json(
         new ApiResponse(
             201,
@@ -92,10 +64,6 @@ const subscribeToChannel = asyncHandler(async (req, res) => {
 })
 
 
-// =====================================================
-// UNSUBSCRIBE FROM A CHANNEL
-// =====================================================
-
 const unsubscribeFromChannel = asyncHandler(async (req, res) => {
 
     // Get channel ID from URL
@@ -104,19 +72,9 @@ const unsubscribeFromChannel = asyncHandler(async (req, res) => {
     // Get current logged-in user
     const subscriberId = req.user._id
 
-
-    // -----------------------------------------
-    // 1. Validate channel ID
-    // -----------------------------------------
-
     if (!mongoose.isValidObjectId(channelId)) {
         throw new ApiError(400, "Invalid channel ID")
     }
-
-
-    // -----------------------------------------
-    // 2. Find subscription
-    // -----------------------------------------
 
     const subscription =
         await Subscription.findOne({
@@ -132,19 +90,9 @@ const unsubscribeFromChannel = asyncHandler(async (req, res) => {
         )
     }
 
-
-    // -----------------------------------------
-    // 3. Delete subscription
-    // -----------------------------------------
-
     await Subscription.findByIdAndDelete(
         subscription._id
     )
-
-
-    // -----------------------------------------
-    // 4. Send response
-    // -----------------------------------------
 
     return res.status(200).json(
         new ApiResponse(
@@ -156,19 +104,10 @@ const unsubscribeFromChannel = asyncHandler(async (req, res) => {
 })
 
 
-// =====================================================
-// GET CHANNEL SUBSCRIBERS
-// =====================================================
-
 const getChannelSubscribers = asyncHandler(async (req, res) => {
 
     // Get channel ID from URL
     const { channelId } = req.params
-
-
-    // -----------------------------------------
-    // 1. Validate channel ID
-    // -----------------------------------------
 
     if (!mongoose.isValidObjectId(channelId)) {
         throw new ApiError(
@@ -176,11 +115,6 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
             "Invalid channel ID"
         )
     }
-
-
-    // -----------------------------------------
-    // 2. Get subscribers
-    // -----------------------------------------
 
     const subscribers = await Subscription.aggregate([
 
@@ -230,10 +164,6 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
     ])
 
 
-    // -----------------------------------------
-    // 3. Send response
-    // -----------------------------------------
-
     return res.status(200).json(
         new ApiResponse(
             200,
@@ -244,19 +174,12 @@ const getChannelSubscribers = asyncHandler(async (req, res) => {
 })
 
 
-// =====================================================
-// GET MY SUBSCRIPTIONS
-// =====================================================
 
 const getMySubscriptions = asyncHandler(async (req, res) => {
 
     // Current logged-in user
     const subscriberId = req.user._id
 
-
-    // -----------------------------------------
-    // 1. Find subscriptions
-    // -----------------------------------------
 
     const subscriptions =
         await Subscription.aggregate([
@@ -300,11 +223,6 @@ const getMySubscriptions = asyncHandler(async (req, res) => {
             }
         ])
 
-
-    // -----------------------------------------
-    // 2. Send response
-    // -----------------------------------------
-
     return res.status(200).json(
         new ApiResponse(
             200,
@@ -315,10 +233,6 @@ const getMySubscriptions = asyncHandler(async (req, res) => {
 })
 
 
-// =====================================================
-// CHECK SUBSCRIPTION STATUS
-// =====================================================
-
 const checkSubscriptionStatus = asyncHandler(async (req, res) => {
 
     // Channel from URL
@@ -328,21 +242,12 @@ const checkSubscriptionStatus = asyncHandler(async (req, res) => {
     const subscriberId = req.user._id
 
 
-    // -----------------------------------------
-    // 1. Validate channel ID
-    // -----------------------------------------
-
     if (!mongoose.isValidObjectId(channelId)) {
         throw new ApiError(
             400,
             "Invalid channel ID"
         )
     }
-
-
-    // -----------------------------------------
-    // 2. Find subscription
-    // -----------------------------------------
 
     const subscription =
         await Subscription.findOne({
